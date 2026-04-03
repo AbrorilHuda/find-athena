@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import LoginForm from "./components/LoginScreen.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 
-const BASE = "/api";
+const BASE = import.meta.env.VITE_API_URL;
 
 export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
