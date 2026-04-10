@@ -6,139 +6,179 @@ export default function DosenCard({ dosen }) {
   const quota = dosen.availableQuota ?? 0;
   const totalMaxQuota = dosen.maxQuota ?? 0;
   const currentLoad = dosen.currentLoad ?? 0;
-
   const progressPercent =
     totalMaxQuota > 0
       ? Math.min(Math.round((currentLoad / totalMaxQuota) * 100), 100)
       : 0;
 
-  return (
-    <div className="dosen-card bg-white rounded-3xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
-      {/* Header dengan Foto */}
-      <div className="relative h-52 bg-linear-to-br from-blue-600 to-indigo-700 flex items-end p-6">
-        {dosen.thumbnail ? (
-          <img
-            src={dosen.thumbnail}
-            alt={dosen.name}
-            className="w-28 h-28 rounded-2xl object-cover border-4 border-white shadow-md absolute -bottom-12 left-6"
-          />
-        ) : (
-          <div className="w-28 h-28 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-4xl font-bold text-white border-4 border-white absolute -bottom-12 left-6">
-            {dosen.name?.slice(0, 2).toUpperCase()}
-          </div>
-        )}
+  const initials = dosen.name?.slice(0, 2).toUpperCase() ?? "??";
 
-        <div className="ml-40 mb-2 text-white">
-          <div className="flex items-center gap-2">
-            <h3 className="text-xl font-bold leading-tight pr-2">
-              {dosen.name}
-            </h3>
-          </div>
-          <p className="text-blue-100">{dosen.jabatan_fungsional || "Dosen"}</p>
+  // warna avatar bergantian biar visual grid lebih hidup
+  const avatarColors = [
+    "bg-purple-50 text-purple-700 border-purple-200",
+    "bg-teal-50 text-teal-700 border-teal-200",
+    "bg-blue-50 text-blue-700 border-blue-200",
+    "bg-amber-50 text-amber-700 border-amber-200",
+  ];
+  const colorIdx = (dosen.id ?? 0) % avatarColors.length;
+
+  return (
+    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[18px] overflow-hidden">
+      {/* ── Top: Avatar + Nama ── */}
+      <div className="flex items-start gap-2.5 p-3.5 pb-3">
+        <div
+          className={`w-10.5 h-10.5 rounded-[11px] shrink-0 border flex items-center justify-center text-[13px] font-medium overflow-hidden ${avatarColors[colorIdx]}`}
+        >
+          {dosen.thumbnail ? (
+            <img
+              src={dosen.thumbnail}
+              alt={dosen.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            initials
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="text-[12.5px] font-medium text-neutral-900 dark:text-neutral-100 leading-snug line-clamp-2">
+            {dosen.name}
+          </p>
+          <p className="text-[10.5px] text-neutral-500 mt-0.5 truncate">
+            {dosen.jabatan_fungsional || "Dosen"}
+          </p>
         </div>
       </div>
 
-      <div className="pt-16 pb-6 px-6 space-y-6">
+      <div className="h-px bg-neutral-100 dark:bg-neutral-800 mx-3.5" />
+
+      {/* ── Body ── */}
+      <div className="p-3.5 pt-3 space-y-2.5">
         {/* SINTA Score */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="text-4xl">⭐</div>
-            <div>
-              <div className="text-3xl font-bold text-gray-800">
-                {dosen.sinta_score}
-              </div>
-              <div className="text-sm text-gray-500 -mt-1">SINTA Score</div>
-            </div>
+          <div>
+            <p className="text-[20px] font-medium text-neutral-900 dark:text-neutral-100 leading-none">
+              {dosen.sinta_score ?? "–"}
+            </p>
+            <p className="text-[10px] text-neutral-500 mt-0.5">SINTA score</p>
           </div>
-
           {dosen.sinta_id && (
             <a
               href={`https://sinta.kemdiktisaintek.go.id/authors/profile/${dosen.sinta_id}`}
               target="_blank"
-              className="text-xs px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl transition-colors"
+              rel="noopener noreferrer"
+              className="text-[10px] font-medium text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 rounded-[7px] px-2 py-1"
             >
-              Lihat Profil SINTA →
+              SINTA →
             </a>
           )}
         </div>
 
-        {/* Bidang Keahlian */}
-        {dosen.expertise && dosen.expertise.length > 0 && (
-          <div>
-            <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">
-              Bidang Keahlian
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {dosen.expertise.map((exp, idx) => (
-                <div
-                  key={idx}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 transition-colors rounded-2xl text-sm flex items-center gap-1.5"
-                >
-                  {exp.name}
-                  <span className="text-xs text-gray-400">({exp.score}%)</span>
-                </div>
-              ))}
-            </div>
+        {/* Tags Keahlian */}
+        {dosen.expertise?.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {dosen.expertise.slice(0, 3).map((exp, idx) => (
+              <span
+                key={idx}
+                className="text-[10px] text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-md px-1.5 py-0.5"
+              >
+                {exp.name} ({exp.score}%)
+              </span>
+            ))}
           </div>
         )}
 
-        {/* Tombol Show More */}
+        {/* Progress Kuota */}
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-[10.5px] text-neutral-500">Sisa kuota</span>
+            <span className="text-[10.5px] font-medium text-teal-700 dark:text-teal-400">
+              {quota} / {totalMaxQuota}
+            </span>
+          </div>
+          <div className="h-1 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-teal-500 rounded-full transition-all"
+              style={{ width: `${100 - progressPercent}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Expand Toggle */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full py-3 text-blue-600 hover:text-blue-700 font-medium flex items-center justify-center gap-2 border border-dashed border-blue-200 hover:border-blue-300 rounded-2xl transition-all"
+          className="w-full flex items-center justify-center gap-1.5 text-[11px] font-medium text-neutral-500 bg-neutral-50 dark:bg-neutral-800 rounded-lg py-1.5 active:scale-95 transition-transform"
         >
-          {expanded ? "▲ Sembunyikan Detail" : "▼ Tampilkan Selengkapnya"}
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 12 12"
+            fill="none"
+            className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
+          >
+            <path
+              d="M2 4l4 4 4-4"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {expanded ? "Sembunyikan" : "Detail"}
         </button>
 
-        {/* Bagian yang muncul saat Expanded */}
+        {/* ── Expanded Section ── */}
         {expanded && (
-          <div className="space-y-6 pt-4 border-t border-gray-100">
-            {/* Kuota Keseluruhan */}
+          <div className="space-y-3 pt-1 border-t border-neutral-100 dark:border-neutral-800">
+            {/* Total Kuota */}
             <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span className="font-semibold">Kuota Pembimbing</span>
-                <span className="font-bold text-emerald-600">
-                  {quota} / {totalMaxQuota}
+              <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider mb-2">
+                Kuota Pembimbing
+              </p>
+              <div className="flex justify-between items-center mb-1.5">
+                <span className="text-[11.5px] text-neutral-500">
+                  Total terpakai
+                </span>
+                <span className="text-[11.5px] font-medium text-neutral-900 dark:text-neutral-100">
+                  {currentLoad} / {totalMaxQuota} mahasiswa
                 </span>
               </div>
-              <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-linear-to-r from-emerald-500 to-teal-500 transition-all"
+                  className="h-full bg-teal-500 rounded-full transition-all"
                   style={{ width: `${100 - progressPercent}%` }}
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
-                Sudah terpakai: <b>{currentLoad}</b> mahasiswa
-              </p>
             </div>
 
-            {/* Detail Kuota per Mata Kuliah */}
-            {dosen.quotas && dosen.quotas.length > 0 && (
+            {/* Detail per Mata Kuliah */}
+            {dosen.quotas?.length > 0 && (
               <div>
-                <p className="text-xs uppercase tracking-widest text-gray-500 mb-3">
-                  Detail Kuota per Mata Kuliah
+                <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider mb-2">
+                  Per Mata Kuliah
                 </p>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {dosen.quotas.map((q) => {
-                    const loadPercent =
+                    const loadPct =
                       q.max_quota > 0
                         ? Math.round((q.current_load / q.max_quota) * 100)
                         : 0;
-
                     return (
-                      <div key={q.id} className="bg-gray-50 rounded-2xl p-4">
-                        <div className="flex justify-between mb-2 text-sm">
-                          <div className="font-medium">
+                      <div
+                        key={q.id}
+                        className="bg-neutral-50 dark:bg-neutral-800 rounded-[10px] px-3 py-2.5"
+                      >
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className="text-[11.5px] font-medium text-neutral-900 dark:text-neutral-100">
                             {q.mata_kuliah.nama}
-                          </div>
-                          <div className="text-gray-500">
+                          </span>
+                          <span className="text-[11px] text-neutral-500">
                             {q.current_load} / {q.max_quota}
-                          </div>
+                          </span>
                         </div>
-                        <div className="h-2 bg-gray-200 rounded-full">
+                        <div className="h-1 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-indigo-600 rounded-full transition-all"
-                            style={{ width: `${loadPercent}%` }}
+                            className="h-full bg-blue-500 rounded-full"
+                            style={{ width: `${loadPct}%` }}
                           />
                         </div>
                       </div>
@@ -148,16 +188,59 @@ export default function DosenCard({ dosen }) {
               </div>
             )}
 
-            {/* Google Scholar */}
-            {dosen.google_scholar_id && (
-              <a
-                href={`https://scholar.google.com/citations?user=${dosen.google_scholar_id}`}
-                target="_blank"
-                className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700"
-              >
-                🔗 Lihat Google Scholar
-              </a>
-            )}
+            {/* Links */}
+            <div className="flex flex-wrap gap-3 pt-0.5">
+              {dosen.google_scholar_id && (
+                <a
+                  href={`https://scholar.google.com/citations?user=${dosen.google_scholar_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[11.5px] text-blue-600 dark:text-blue-400"
+                >
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <path
+                      d="M3 3h10v10H3z"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M6 3V1m4 2V1M3 7h10"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  Google Scholar
+                </a>
+              )}
+              {dosen.sinta_id && (
+                <a
+                  href={`https://sinta.kemdiktisaintek.go.id/authors/profile/${dosen.sinta_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[11.5px] text-blue-600 dark:text-blue-400"
+                >
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                    <circle
+                      cx="8"
+                      cy="8"
+                      r="6.5"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                    />
+                    <path
+                      d="M8 5v3.5l2 1.5"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  Profil SINTA
+                </a>
+              )}
+            </div>
           </div>
         )}
       </div>

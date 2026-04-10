@@ -16,7 +16,6 @@ export default function App() {
   const [search, setSearch] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
 
-  // Cek apakah sudah login saat halaman dimuat
   useEffect(() => {
     const savedToken = localStorage.getItem("athena_token");
     const savedUser = localStorage.getItem("athena_user");
@@ -121,33 +120,22 @@ export default function App() {
   }, [dosen, search]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-800">
-            🎓 Athena Dosen Finder
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Rekomendasi Dosen Pembimbing • Informatika
-          </p>
-        </div>
-
-        {!isLoggedIn ? (
-          <LoginForm onLogin={handleLogin} loading={loading} error={error} />
-        ) : (
-          <Dashboard
-            user={user}
-            dosen={dosen}
-            filtered={filtered}
-            search={search}
-            setSearch={setSearch}
-            lastUpdated={lastUpdated}
-            loading={loading}
-            onRefresh={fetchDosen}
-            onLogout={handleLogout}
-          />
-        )}
-      </div>
+    <div className="min-h-screen bg-neutral-100 dark:bg-neutral-950">
+      {!isLoggedIn ? (
+        <LoginForm onLogin={handleLogin} loading={loading} error={error} />
+      ) : (
+        <Dashboard
+          user={user}
+          dosen={dosen}
+          filtered={filtered}
+          search={search}
+          setSearch={setSearch}
+          lastUpdated={lastUpdated}
+          loading={loading}
+          onRefresh={fetchDosen}
+          onLogout={handleLogout}
+        />
+      )}
     </div>
   );
 }
