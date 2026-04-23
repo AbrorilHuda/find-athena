@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://apiathena.unira.ac.id/api/$1"
+      "source": "/api/athena/(.*)",
+      "destination": "/api/athena-proxy"
     }
   ]
 }
