@@ -1,13 +1,13 @@
 const palettes = [
-  "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border-purple-200 dark:border-purple-900",
-  "bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border-teal-200 dark:border-teal-900",
-  "bg-brand-50 text-brand-700 dark:bg-brand-950/60 dark:text-brand-300 border-brand-200 dark:border-brand-900",
-  "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-900",
+  "bg-brand-100 dark:bg-brand-950/60 text-brand-700 dark:text-brand-300 border-brand-200 dark:border-brand-900",
+  "bg-[color-mix(in_oklab,var(--color-accent)_14%,transparent)] text-[oklch(42%_0.12_285)] dark:text-[oklch(78%_0.12_285)] border-[color-mix(in_oklab,var(--color-accent)_30%,transparent)]",
+  "bg-[color-mix(in_oklab,var(--color-success)_12%,transparent)] text-[oklch(40%_0.13_150)] dark:text-[oklch(78%_0.13_150)] border-[color-mix(in_oklab,var(--color-success)_30%,transparent)]",
+  "bg-[color-mix(in_oklab,var(--color-warning)_14%,transparent)] text-[oklch(45%_0.12_70)] dark:text-[oklch(80%_0.12_70)] border-[color-mix(in_oklab,var(--color-warning)_32%,transparent)]",
 ];
 
 /**
- * Avatar — photo or initials with rotating color palette by `seed`.
- * props: src, alt, name, seed (id), size
+ * Avatar — photo or serif initials. Rotating palette by seed.
+ * Uses serif font for initials to reinforce editorial identity.
  */
 export default function Avatar({
   src,
@@ -15,7 +15,8 @@ export default function Avatar({
   name = "",
   seed = 0,
   size = "h-11 w-11",
-  rounded = "rounded-xl",
+  rounded = "rounded-lg",
+  serif = false,
 }) {
   const initials = name?.slice(0, 2).toUpperCase() ?? "??";
   const palette = palettes[seed % palettes.length];
@@ -27,7 +28,13 @@ export default function Avatar({
       {src ? (
         <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (
-        <span className="text-sm font-semibold">{initials}</span>
+        <span
+          className={`text-sm font-semibold tracking-tight ${
+            serif ? "font-serif" : ""
+          }`}
+        >
+          {initials}
+        </span>
       )}
     </div>
   );

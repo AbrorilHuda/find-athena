@@ -2,23 +2,22 @@ import Spinner from "./Spinner.jsx";
 
 const variants = {
   primary:
-    "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-sm",
+    "bg-brand-700 text-paper-50 hover:bg-brand-800 dark:bg-brand-600 dark:hover:bg-brand-500",
   secondary:
-    "bg-white dark:bg-neutral-900 text-brand-700 dark:text-brand-300 border border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800",
+    "bg-transparent text-brand-700 dark:text-brand-300 border border-brand-300 dark:border-brand-800 hover:bg-brand-50 dark:hover:bg-brand-950",
   ghost:
-    "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800",
+    "bg-transparent text-paper-600 dark:text-paper-400 hover:bg-paper-200/60 dark:hover:bg-paper-850",
   danger:
-    "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 hover:bg-red-100 dark:hover:bg-red-900/60",
+    "bg-transparent text-danger border border-danger/30 hover:bg-danger/8 dark:hover:bg-danger/12",
 };
 
 const sizes = {
   sm: "text-xs px-2.5 py-1.5 gap-1.5",
-  md: "text-sm px-3.5 py-2 gap-2",
+  md: "text-sm px-4 py-2 gap-2",
 };
 
 /**
- * Button primitive.
- * props: variant, size, loading, leftIcon, rightIcon
+ * Button primitive — editorial: solid ink fill or hairline outline.
  */
 export default function Button({
   variant = "primary",
@@ -34,11 +33,11 @@ export default function Button({
   return (
     <button
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center font-medium rounded-xl
-        transition-all duration-150 active:scale-[0.98]
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-300
-        focus-visible:ring-offset-1 dark:focus-visible:ring-offset-neutral-950
-        disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100
+      className={`inline-flex items-center justify-center font-medium rounded-lg
+        transition-colors duration-150
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-400
+        focus-visible:ring-offset-2 dark:focus-visible:ring-offset-paper-950
+        disabled:opacity-45 disabled:cursor-not-allowed
         cursor-pointer ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
