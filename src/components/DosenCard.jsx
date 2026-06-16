@@ -1,4 +1,9 @@
 import { useState } from "react";
+import Card from "./ui/Card.jsx";
+import Avatar from "./ui/Avatar.jsx";
+import Badge from "./ui/Badge.jsx";
+import ProgressBar from "./ui/ProgressBar.jsx";
+import { ChevronDown, ExternalLink, Scholar, Sinta } from "./ui/icons.jsx";
 
 export default function DosenCard({ dosen }) {
   const [expanded, setExpanded] = useState(false);
@@ -10,40 +15,29 @@ export default function DosenCard({ dosen }) {
     totalMaxQuota > 0
       ? Math.min(Math.round((currentLoad / totalMaxQuota) * 100), 100)
       : 0;
+  const remainingPercent = 100 - progressPercent;
 
-  const initials = dosen.name?.slice(0, 2).toUpperCase() ?? "??";
-
-  // warna avatar bergantian biar visual grid lebih hidup
-  const avatarColors = [
-    "bg-purple-50 text-purple-700 border-purple-200",
-    "bg-teal-50 text-teal-700 border-teal-200",
-    "bg-blue-50 text-blue-700 border-blue-200",
-    "bg-amber-50 text-amber-700 border-amber-200",
-  ];
-  const colorIdx = (dosen.id ?? 0) % avatarColors.length;
+  // Quota tone: full = emerald, low = amber, full-capacity = red
+  const quotaTone =
+    quota === 0 ? "red" : remainingPercent <= 30 ? "amber" : "emerald";
 
   return (
-    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-[18px] overflow-hidden">
+    <Card className="overflow-hidden flex flex-col">
       {/* ── Top: Avatar + Nama ── */}
       <div className="flex items-start gap-2.5 p-3.5 pb-3">
-        <div
-          className={`w-10.5 h-10.5 rounded-[11px] shrink-0 border flex items-center justify-center text-[13px] font-medium overflow-hidden ${avatarColors[colorIdx]}`}
-        >
-          {dosen.thumbnail ? (
-            <img
-              src={dosen.thumbnail}
-              alt={dosen.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            initials
-          )}
-        </div>
-        <div className="min-w-0">
-          <p className="text-[12.5px] font-medium text-neutral-900 dark:text-neutral-100 leading-snug line-clamp-2">
+        <Avatar
+          src={dosen.thumbnail}
+          alt={dosen.name}
+          name={dosen.name}
+          seed={dosen.id ?? 0}
+          size="h-10 w-10"
+          rounded="rounded-xl"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-[13px] font-medium text-neutral-900 dark:text-neutral-100 leading-snug line-clamp-2">
             {dosen.name}
           </p>
-          <p className="text-[10.5px] text-neutral-500 mt-0.5 truncate">
+          <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5 truncate">
             {dosen.jabatan_fungsional || "Dosen"}
           </p>
         </div>
@@ -52,23 +46,27 @@ export default function DosenCard({ dosen }) {
       <div className="h-px bg-neutral-100 dark:bg-neutral-800 mx-3.5" />
 
       {/* ── Body ── */}
-      <div className="p-3.5 pt-3 space-y-2.5">
+      <div className="p-3.5 pt-3 space-y-3 flex-1 flex flex-col">
         {/* SINTA Score */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-end justify-between">
           <div>
-            <p className="text-[20px] font-medium text-neutral-900 dark:text-neutral-100 leading-none">
+            <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 leading-none tabular-nums">
               {dosen.sinta_score ?? "–"}
             </p>
-            <p className="text-[10px] text-neutral-500 mt-0.5">SINTA score</p>
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+              SINTA Score
+            </p>
           </div>
           {dosen.sinta_id && (
             <a
               href={`https://sinta.kemdiktisaintek.go.id/authors/profile/${dosen.sinta_id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[10px] font-medium text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950 border border-teal-200 dark:border-teal-800 rounded-[7px] px-2 py-1"
+              className="inline-flex items-center gap-1 text-[11px] font-medium text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-900 rounded-lg px-2 py-1 hover:bg-teal-100 dark:hover:bg-teal-900/60 transition-colors"
             >
-              SINTA →
+              <Sinta className="h-3 w-3" />
+              SINTA
+              <ExternalLink className="h-2.5 w-2.5 opacity-60" />
             </a>
           )}
         </div>
@@ -77,83 +75,62 @@ export default function DosenCard({ dosen }) {
         {dosen.expertise?.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {dosen.expertise.slice(0, 3).map((exp, idx) => (
-              <span
-                key={idx}
-                className="text-[10px] text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 border border-purple-200 dark:border-purple-800 rounded-md px-1.5 py-0.5"
-              >
+              <Badge key={idx} tone="purple" className="text-[10px] !px-1.5">
                 {exp.name} ({exp.score}%)
-              </span>
+              </Badge>
             ))}
           </div>
         )}
 
         {/* Progress Kuota */}
         <div>
-          <div className="flex justify-between items-center mb-1">
-            <span className="text-[10.5px] text-neutral-500">Sisa kuota</span>
-            <span className="text-[10.5px] font-medium text-teal-700 dark:text-teal-400">
+          <div className="flex justify-between items-center mb-1.5">
+            <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+              Sisa kuota
+            </span>
+            <span className="text-[11px] font-medium text-neutral-700 dark:text-neutral-200 tabular-nums">
               {quota} / {totalMaxQuota}
             </span>
           </div>
-          <div className="h-1 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-teal-500 rounded-full transition-all"
-              style={{ width: `${100 - progressPercent}%` }}
-            />
-          </div>
+          <ProgressBar value={remainingPercent} tone={quotaTone} />
         </div>
 
         {/* Expand Toggle */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full flex items-center justify-center gap-1.5 text-[11px] font-medium text-neutral-500 bg-neutral-50 dark:bg-neutral-800 rounded-lg py-1.5 active:scale-95 transition-transform"
+          className="w-full flex items-center justify-center gap-1.5 text-[11px] font-medium text-neutral-500 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-800/60 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-lg py-1.5 active:scale-[0.98] transition-all cursor-pointer mt-auto"
         >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 12 12"
-            fill="none"
-            className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}
-          >
-            <path
-              d="M2 4l4 4 4-4"
-              stroke="currentColor"
-              strokeWidth="1.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <ChevronDown
+            className={`h-3 w-3 transition-transform duration-200 ${
+              expanded ? "rotate-180" : ""
+            }`}
+          />
           {expanded ? "Sembunyikan" : "Detail"}
         </button>
 
         {/* ── Expanded Section ── */}
         {expanded && (
-          <div className="space-y-3 pt-1 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="space-y-3 pt-3 border-t border-neutral-100 dark:border-neutral-800">
             {/* Total Kuota */}
             <div>
-              <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
                 Kuota Pembimbing
               </p>
               <div className="flex justify-between items-center mb-1.5">
-                <span className="text-[11.5px] text-neutral-500">
+                <span className="text-xs text-neutral-500 dark:text-neutral-400">
                   Total terpakai
                 </span>
-                <span className="text-[11.5px] font-medium text-neutral-900 dark:text-neutral-100">
-                  {currentLoad} / {totalMaxQuota} mahasiswa
+                <span className="text-xs font-medium text-neutral-900 dark:text-neutral-100 tabular-nums">
+                  {currentLoad} / {totalMaxQuota}
                 </span>
               </div>
-              <div className="h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-teal-500 rounded-full transition-all"
-                  style={{ width: `${100 - progressPercent}%` }}
-                />
-              </div>
+              <ProgressBar value={remainingPercent} tone="teal" height="h-1.5" />
             </div>
 
             {/* Detail per Mata Kuliah */}
             {dosen.quotas?.length > 0 && (
               <div>
-                <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider mb-2">
+                <p className="text-[10px] font-semibold text-neutral-400 dark:text-neutral-500 uppercase tracking-wider mb-2">
                   Per Mata Kuliah
                 </p>
                 <div className="space-y-2">
@@ -165,22 +142,17 @@ export default function DosenCard({ dosen }) {
                     return (
                       <div
                         key={q.id}
-                        className="bg-neutral-50 dark:bg-neutral-800 rounded-[10px] px-3 py-2.5"
+                        className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl px-3 py-2.5"
                       >
-                        <div className="flex justify-between items-center mb-1.5">
-                          <span className="text-[11.5px] font-medium text-neutral-900 dark:text-neutral-100">
+                        <div className="flex justify-between items-center mb-1.5 gap-2">
+                          <span className="text-xs font-medium text-neutral-900 dark:text-neutral-100 truncate">
                             {q.mata_kuliah.nama}
                           </span>
-                          <span className="text-[11px] text-neutral-500">
+                          <span className="text-[11px] text-neutral-500 dark:text-neutral-400 shrink-0 tabular-nums">
                             {q.current_load} / {q.max_quota}
                           </span>
                         </div>
-                        <div className="h-1 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-blue-500 rounded-full"
-                            style={{ width: `${loadPct}%` }}
-                          />
-                        </div>
+                        <ProgressBar value={loadPct} tone="blue" height="h-1" />
                       </div>
                     );
                   })}
@@ -189,61 +161,35 @@ export default function DosenCard({ dosen }) {
             )}
 
             {/* Links */}
-            <div className="flex flex-wrap gap-3 pt-0.5">
-              {dosen.google_scholar_id && (
-                <a
-                  href={`https://scholar.google.com/citations?user=${dosen.google_scholar_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11.5px] text-blue-600 dark:text-blue-400"
-                >
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3 3h10v10H3z"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M6 3V1m4 2V1M3 7h10"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  Google Scholar
-                </a>
-              )}
-              {dosen.sinta_id && (
-                <a
-                  href={`https://sinta.kemdiktisaintek.go.id/authors/profile/${dosen.sinta_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-[11.5px] text-blue-600 dark:text-blue-400"
-                >
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                    <circle
-                      cx="8"
-                      cy="8"
-                      r="6.5"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                    />
-                    <path
-                      d="M8 5v3.5l2 1.5"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  Profil SINTA
-                </a>
-              )}
-            </div>
+            {(dosen.google_scholar_id || dosen.sinta_id) && (
+              <div className="flex flex-wrap gap-x-4 gap-y-2 pt-0.5">
+                {dosen.google_scholar_id && (
+                  <a
+                    href={`https://scholar.google.com/citations?user=${dosen.google_scholar_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    <Scholar className="h-3.5 w-3.5" />
+                    Google Scholar
+                  </a>
+                )}
+                {dosen.sinta_id && (
+                  <a
+                    href={`https://sinta.kemdiktisaintek.go.id/authors/profile/${dosen.sinta_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-brand-600 dark:text-brand-400 hover:underline"
+                  >
+                    <Sinta className="h-3.5 w-3.5" />
+                    Profil SINTA
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
-    </div>
+    </Card>
   );
 }

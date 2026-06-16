@@ -1,1 +1,59 @@
 @import "tailwindcss";
+
+/* ────────────────────────────────────────────────────────────
+   Design tokens — Clean Minimal · Biru Athena
+   Tailwind v4 CSS-first config
+   ──────────────────────────────────────────────────────────── */
+@theme {
+  /* Typography */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+
+  /* Brand — Biru Athena (anchored on #185FA5) */
+  --color-brand-50: #eef6fc;
+  --color-brand-100: #d6eaf7;
+  --color-brand-200: #b0d6ee;
+  --color-brand-300: #80bae0;
+  --color-brand-400: #4d97cd;
+  --color-brand-500: #2a7cb8;
+  --color-brand-600: #185fa5; /* brand core */
+  --color-brand-700: #134d86;
+  --color-brand-800: #103f6c;
+  --color-brand-900: #0d3458;
+  --color-brand-950: #08223a;
+
+  /* Soft elevation */
+  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04),
+    0 1px 3px 0 rgb(0 0 0 / 0.06);
+  --shadow-soft: 0 4px 16px -4px rgb(16 63 108 / 0.12);
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-sans);
+}
+
+::selection {
+  background-color: var(--color-brand-100);
+  color: var(--color-brand-900);
+}
+
+.dark ::selection {
+  background-color: color-mix(in oklab, var(--color-brand-400) 30%, transparent);
+  color: #fff;
+}
+
+/* Custom scrollbar — subtle */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-brand-200) transparent;
+}
+.dark * {
+  scrollbar-color: var(--color-brand-900) transparent;
+}
